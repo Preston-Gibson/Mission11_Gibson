@@ -24,6 +24,7 @@ function BookTable() {
   const [pageSize, setPageSize] = useState(5)
   const [sortOrder, setSortOrder] = useState('title')
 
+  // Re-fetch whenever pageNum, pageSize, or sortOrder changes
   useEffect(() => {
     fetch(
       `http://localhost:5011/api/books?pageNum=${pageNum}&pageSize=${pageSize}&sortOrder=${sortOrder}`
@@ -35,6 +36,7 @@ function BookTable() {
       })
   }, [pageNum, pageSize, sortOrder])
 
+  // Calculate total pages so we know when to disable the Next button
   const totalPages = Math.ceil(totalBooks / pageSize)
 
   return (
@@ -42,11 +44,12 @@ function BookTable() {
       <table className="table table-hover table-bordered">
         <thead>
           <tr>
+            {/* Clicking the Title header toggles between ascending and descending sort */}
             <th
               style={{ cursor: 'pointer' }}
               onClick={() => {
                 setSortOrder(sortOrder === 'title' ? 'title_desc' : 'title')
-                setPageNum(1)
+                setPageNum(1) // Reset to page 1 so results aren't confusing after a sort change
               }}
             >
               Title {sortOrder === 'title' ? '▲' : sortOrder === 'title_desc' ? '▼' : ''}
@@ -95,6 +98,7 @@ function BookTable() {
           Next
         </button>
 
+        {/* Reset to page 1 when page size changes so we don't land on a now-nonexistent page */}
         <label>
           Results per page:{' '}
           <select

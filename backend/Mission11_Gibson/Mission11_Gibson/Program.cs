@@ -3,27 +3,28 @@ using Mission11_Gibson.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
+
+// Register the EF Core DbContext and point it at the SQLite connection string in appsettings.json
 builder.Services.AddDbContext<BookstoreContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Allow the React dev server (port 5173) to make requests to this API
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(p =>
         p.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod()));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
-app.UseCors();
-app.MapControllers();
+app.UseCors();        // Must come before MapControllers so CORS headers are added to every response
+app.MapControllers(); // Wires up all [ApiController] classes (e.g. BooksController)
 
 var summaries = new[]
 {
