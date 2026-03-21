@@ -21,8 +21,9 @@ public class BooksController : ControllerBase
 
         query = sortOrder.ToLower() switch
         {
-            "author" => query.OrderBy(b => b.Author),
-            _        => query.OrderBy(b => b.Title),
+            "author"     => query.OrderBy(b => b.Author),
+            "title_desc" => query.OrderByDescending(b => b.Title),
+            _            => query.OrderBy(b => b.Title),
         };
 
         var totalBooks = query.Count();
