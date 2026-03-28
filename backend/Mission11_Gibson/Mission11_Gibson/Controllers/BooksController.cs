@@ -15,13 +15,19 @@ public class BooksController : ControllerBase
         _context = context;
     }
 
-    // GET /api/books?pageNum=1&pageSize=5&sortOrder=title
+    // GET /api/books?pageNum=1&pageSize=5&sortOrder=title&category=Biography
     // Query params are optional — defaults are applied if not provided
     [HttpGet]
-    public IActionResult GetBooks(int pageNum = 1, int pageSize = 5, string sortOrder = "title")
+    public IActionResult GetBooks(int pageNum = 1, int pageSize = 5, string sortOrder = "title", string? category = null)
     {
         // Start with all books — no query is sent to the DB yet (deferred execution)
         var query = _context.Books.AsQueryable();
+
+        // Filter by category if one was provided
+        if (!string.IsNullOrEmpty(category))
+        {
+            query = query.Where(b => b.Category == category);
+        }
 
         // Apply sort — switch on the sortOrder string to pick the right OrderBy
         query = sortOrder.ToLower() switch
@@ -42,5 +48,18 @@ public class BooksController : ControllerBase
 
         // Return both the page of books and the total count as a JSON object
         return Ok(new { books, totalBooks });
+    }
+
+    // GET /api/books/categories — returns the distinct list of categories for the filter dropdown
+    [HttpGet("categories")]
+    public IActionResult GetCategories()
+    {
+        var categories = _context.Books
+            .Select(b => b.Category)
+            .Distinct()
+            .OrderBy(c => c)
+            .ToList();
+
+        return Ok(categories);
     }
 }
