@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Heading from './components/Heading'
 import BookTable from './components/BookTable'
 import CartPage from './components/CartPage'
+import AdminBooks from './components/AdminBooks'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<BookTable />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/adminbooks" element={<AdminBooks />} />
         </Routes>
       </div>
     </>
